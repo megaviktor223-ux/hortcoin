@@ -722,10 +722,11 @@
         <div id="dc-badge" class="discord-status" style="display:block; width:fit-content; margin:6px auto 0;">Discord не пов'язано</div>
 
         <div id="dc-connect-box">
-          Щоб синхронізувати баланс HortCoin з Discord:<br>
-          1. У Discord виконайте команду <b>/зв_язати_телеграм</b><br>
-          2. Скопіюйте код (діє 5 хв)<br>
-          3. Надішліть його цьому Telegram-боту в чат — він сам попросить код після /start
+          Введіть код прив'язки, який видав Discord-бот по команді /зв_язати_телеграм (діє 5 хвилин).
+          <div class="dc-form">
+            <input type="text" id="dc-code-input" placeholder="Код прив'язки (6 цифр)" maxlength="6" inputmode="numeric">
+            <button class="btn btn-primary" onclick="connectDiscord()">Зв'язати</button>
+          </div>
         </div>
       </div>
     </div>
@@ -995,7 +996,8 @@
         // Отримуємо Telegram ID користувача
         const tgUser = tg.initDataUnsafe && tg.initDataUnsafe.user ? tg.initDataUnsafe.user : null;
         const tgId = tgUser ? tgUser.id : 123456789; // Дефолтний ID для тестів у браузері
-        
+        const tgInitData = tg.initData || ""; // Сирі initData - сервер перевіряє підпис Telegram і за цим видає сесію
+
         // Автоматично підставляємо ім'я з Telegram
         if (tgUser) {
             document.getElementById('user-name').innerText = tgUser.first_name;
@@ -1013,12 +1015,55 @@
         let isConnectedToDiscord = false;
         let connectedDiscordId = null;
 
+        // Одноразовий ключ сесії (sessions.db на сервері).
+        // Видається при кожному вході в міні-застосунок і живе лише в пам'яті сторінки:
+        // при перезаході генерується новий ключ, старий одразу стає недійсним.
+        let sessionToken = null;
+
+        // Створення/оновлення сесії. Викликається один раз при старті додатка.
+        async function startSession() {
+            try {
+                const response = await fetch('/api/session/start', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ tg_id: tgId, init_data: tgInitData })
+                });
+                const data = await response.json();
+                if (data.status === 'success') {
+                    sessionToken = data.session_token;
+                } else {
+                    console.error('Не вдалося створити сесію:', data.message);
+                }
+            } catch (error) {
+                console.error("Помилка створення сесії:", error);
+            }
+        }
+
+        // Єдина обгортка для всіх запитів до бекенду.
+        // Всі ендпоінти працюють через POST і приймають session_token у тілі запиту.
+        async function apiPost(endpoint, payload = {}) {
+            const doRequest = () => fetch(endpoint, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ session_token: sessionToken, ...payload })
+            });
+
+            let response = await doRequest();
+
+            // Сесія протухла/невалідна (401) - перевидаємо ключ і повторюємо запит один раз
+            if (response.status === 401) {
+                await startSession();
+                response = await doRequest();
+            }
+
+            return response.json();
+        }
+
         // Функція отримання профілю з сервера SQLite3 під час запуску додатка
         async function loadProfile() {
             try {
-                const response = await fetch(`/api/profile/${tgId}`);
-                const data = await response.json();
-                
+                const data = await apiPost('/api/profile');
+
                 balance = data.balance;
                 statsGames = data.games;
                 statsWins = data.wins;
@@ -1048,24 +1093,33 @@
             if (!isConnectedToDiscord) return;
 
             try {
-                await fetch('/api/update_balance', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        tg_id: tgId,
-                        discord_id: connectedDiscordId,
-                        balance: balance,
-                        is_win: isWin
-                    })
+                await apiPost('/api/update_balance', {
+                    balance: balance,
+                    is_win: isWin
                 });
             } catch (error) {
                 console.error("Помилка збереження результату гри в SQLite:", error);
             }
         }
 
-        // Прив'язка Discord тепер відбувається через код у самому Telegram-боті
-        // (команда /зв_язати_телеграм у Discord + надсилання коду боту),
-        // тому окрема функція ручного вводу Discord ID у вебапці більше не потрібна.
+        // Функція прив'язки Discord-акаунту за одноразовим кодом з команди /зв_язати_телеграм
+        async function connectDiscord() {
+            const dcCodeInput = document.getElementById('dc-code-input').value.trim();
+            if (!dcCodeInput) { alert("Будь ласка, введіть код прив'язки з Discord!"); return; }
+
+            try {
+                const data = await apiPost('/api/sync', { link_code: dcCodeInput });
+
+                if (data.status === "success") {
+                    alert("Акаунт успішно синхронізовано з базою Discord!");
+                    loadProfile(); // Перезавантажуємо оновлені дані профілю та балансу
+                } else {
+                    alert(data.message || "Не вдалося синхронізувати акаунт. Перевірте код.");
+                }
+            } catch (error) {
+                alert("Помилка підключення. Перевірте з'єднання з сервером.");
+            }
+        }
 
         function updateBal() { 
             document.getElementById('global-balance').innerText = balance; 
@@ -1274,9 +1328,9 @@
             else { let w = Math.floor(b * 1.5); balance += w; document.getElementById('ru-gun').innerText = `💨`; document.getElementById('ru-msg').innerText = `Клац! +${w} 🪙`; setTimeout(()=>document.getElementById('ru-gun').innerText = '🔫', 1000); saveGameResultToDB(true); }
         }
 
-        // ПЕРШИЙ ЗАПУСК: завантажуємо дані користувача з бази відразу при відкритті додатку
+        // ПЕРШИЙ ЗАПУСК: спочатку відкриваємо (одноразову) сесію, потім завантажуємо профіль
         resetMinesGame();
-        loadProfile();
+        startSession().then(loadProfile);
 </script>
 
 </body>
