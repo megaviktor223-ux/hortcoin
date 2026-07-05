@@ -990,6 +990,18 @@
 </div>
 
 <script>
+        // ==========================================================
+        // АДРЕСА СЕРВЕРА (server.py) НА БОТХОСТИНГУ.
+        // Заміни на реальну адресу твого хосту, наприклад:
+        //   "https://your-app-name.botost.io"
+        //   "http://185.xxx.xxx.xxx:20268"  (сервер на своєму порту)
+        // ВАЖЛИВО: якщо в адресі немає HTTPS, а сама index.html лежить
+        // на GitHub Pages (https://...github.io/...), браузер заблокує
+        // запити через Mixed Content — тому на сервері краще тримати
+        // https (через Cloudflare/Nginx-проксі або сам ботхостинг це дає).
+        // ==========================================================
+        const API_BASE = "https://ВАШ-ХОСТ-СЕРВЕРА.example.com";
+
         const tg = window.Telegram.WebApp;
         tg.expand();
 
@@ -1023,7 +1035,7 @@
         // Створення/оновлення сесії. Викликається один раз при старті додатка.
         async function startSession() {
             try {
-                const response = await fetch('/api/session/start', {
+                const response = await fetch(API_BASE + '/api/session/start', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ tg_id: tgId, init_data: tgInitData })
@@ -1042,7 +1054,7 @@
         // Єдина обгортка для всіх запитів до бекенду.
         // Всі ендпоінти працюють через POST і приймають session_token у тілі запиту.
         async function apiPost(endpoint, payload = {}) {
-            const doRequest = () => fetch(endpoint, {
+            const doRequest = () => fetch(API_BASE + endpoint, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ session_token: sessionToken, ...payload })
