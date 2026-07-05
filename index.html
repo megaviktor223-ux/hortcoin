@@ -6,7 +6,7 @@
 <title>HortCoin Casino</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesque:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesque:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
     --bg-1:#0a0912;
@@ -20,9 +20,6 @@
     --gold-dim:#8a6f2e;
     --violet:#8b6bff;
     --violet-dim:#4a3d8f;
-    --red:#ff4d6d;
-    --teal:#3ddc97;
-    --discord:#5865F2;
     --radius-lg:22px;
     --radius-md:14px;
     --radius-sm:9px;
@@ -48,13 +45,6 @@
     -webkit-tap-highlight-color: transparent;
   }
 
-  ::selection{ background:var(--violet); color:#fff; }
-
-  button, input{
-    font-family:inherit;
-    color:inherit;
-  }
-
   .app{
     max-width:480px;
     margin:0 auto;
@@ -64,8 +54,6 @@
     position:relative;
     padding-bottom:78px;
   }
-
-  /* ---------- HEADER / SCOREBOARD ---------- */
 
   .app-header{
     padding:18px 18px 10px;
@@ -95,14 +83,7 @@
     border-radius:var(--radius-lg);
     padding:16px 18px;
     position:relative;
-    overflow:hidden;
     box-shadow: inset 0 1px 0 rgba(255,255,255,.04), 0 12px 30px -14px rgba(0,0,0,.6);
-  }
-  .scoreboard::before{
-    content:"";
-    position:absolute; inset:0;
-    background:repeating-linear-gradient(180deg, rgba(255,255,255,.025) 0px, rgba(255,255,255,.025) 1px, transparent 1px, transparent 3px);
-    pointer-events:none;
   }
 
   .scoreboard-top{
@@ -129,8 +110,8 @@
     font-size:20px;
   }
 
-  .user-meta{ min-width:0; }
-  #user-name{
+  .user-meta { min-width:0; }
+  #top-username{
     display:block;
     font-weight:600;
     font-size:14px;
@@ -138,29 +119,6 @@
     overflow:hidden;
     text-overflow:ellipsis;
     max-width:170px;
-  }
-
-  .discord-status{
-    display:inline-block;
-    margin-top:2px;
-    font-size:11px;
-    font-weight:600;
-    padding:2px 8px;
-    border-radius:100px;
-    background:var(--surface-2);
-    border:1px solid var(--border);
-    color:var(--text-muted);
-  }
-  .discord-status.dc-connected{
-    background:rgba(88,101,242,.16);
-    border-color:rgba(88,101,242,.5);
-    color:#b9c0ff;
-  }
-
-  #dc-role{
-    font-size:11px;
-    color:var(--gold);
-    font-weight:600;
   }
 
   .balance-readout{
@@ -175,12 +133,10 @@
     font-weight:600;
   }
   .balance-value{
-    font-family:'JetBrains Mono',monospace;
     font-weight:700;
     font-size:24px;
     color:var(--gold);
     text-shadow:0 0 16px rgba(255,200,87,.45);
-    letter-spacing:.02em;
     line-height:1.2;
   }
 
@@ -188,7 +144,6 @@
     display:flex;
     gap:10px;
     margin-top:14px;
-    position:relative;
   }
   .stat-pill{
     flex:1;
@@ -198,20 +153,16 @@
     padding:8px 10px;
     text-align:center;
   }
-  .stat-pill .n{
-    font-family:'JetBrains Mono',monospace;
+  .stat-num{
+    font-size:18px;
     font-weight:700;
-    font-size:16px;
-    display:block;
   }
-  .stat-pill .l{
+  .stat-label{
     font-size:10px;
     color:var(--text-muted);
     text-transform:uppercase;
-    letter-spacing:.08em;
+    margin-top:4px;
   }
-
-  /* ---------- CONTENT ---------- */
 
   .content{
     flex:1;
@@ -219,1131 +170,339 @@
   }
 
   .section-title{
-    font-family:'Space Grotesque',sans-serif;
-    font-weight:600;
-    font-size:13px;
-    text-transform:uppercase;
-    letter-spacing:.1em;
-    color:var(--text-muted);
-    margin:4px 2px 10px;
+    font-size:16px;
+    font-weight:700;
+    margin-bottom:16px;
   }
 
-  /* ---------- GAME GRID ---------- */
-
-  .game-grid{
+  .games-grid {
     display:grid;
     grid-template-columns:1fr 1fr;
-    gap:12px;
+    gap:14px;
   }
 
   .game-card{
     background:linear-gradient(180deg, var(--surface-2), var(--surface));
     border:1px solid var(--border);
     border-radius:var(--radius-md);
-    padding:16px 12px;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    gap:8px;
-    cursor:pointer;
-    transition:transform .15s ease, border-color .15s ease, box-shadow .15s ease;
+    padding:24px 16px;
     text-align:center;
-  }
-  .game-card:active{ transform:scale(.96); }
-  .game-card:hover{
-    border-color:var(--violet-dim);
-    box-shadow:0 10px 24px -14px rgba(139,107,255,.55);
-  }
-
-  .game-card .icon{
-    width:52px; height:52px;
-    border-radius:50%;
-    display:flex; align-items:center; justify-content:center;
-    font-size:26px;
-    background:radial-gradient(circle at 35% 30%, rgba(255,255,255,.07), transparent 60%), var(--bg-2);
-    border:1px dashed var(--gold-dim);
-  }
-
-  .game-card .name{
-    font-family:'Space Grotesque',sans-serif;
-    font-weight:600;
-    font-size:13px;
-  }
-
-  /* ---------- BOTTOM NAV ---------- */
-
-  .bottom-nav{
-    position:fixed;
-    left:50%;
-    transform:translateX(-50%);
-    bottom:14px;
-    width:calc(100% - 32px);
-    max-width:448px;
-    display:flex;
-    background:rgba(24,20,40,.9);
-    backdrop-filter:blur(10px);
-    border:1px solid var(--border);
-    border-radius:100px;
-    padding:6px;
-    gap:6px;
-    z-index:40;
-  }
-
-  .nav-btn{
-    flex:1;
-    border:none;
-    background:transparent;
-    color:var(--text-muted);
-    font-family:'Space Grotesque',sans-serif;
-    font-weight:600;
-    font-size:13px;
-    padding:11px 0;
-    border-radius:100px;
-    display:flex; align-items:center; justify-content:center; gap:6px;
     cursor:pointer;
-    transition:background .15s ease, color .15s ease;
+    transition:transform .1s ease, border-color .1s ease;
   }
-  .nav-btn.active{
-    background:linear-gradient(180deg, var(--violet), #6f52e0);
-    color:#fff;
-    box-shadow:0 8px 18px -8px rgba(139,107,255,.7);
+  .game-card:active{ transform:scale(.97); }
+
+  .game-icon-wrapper{
+    width:56px; height:56px;
+    border:1px dashed var(--gold-dim);
+    border-radius:50%;
+    margin:0 auto 12px auto;
+    display:flex; align-items:center; justify-content:center;
+    font-size:24px;
+    background:rgba(255,200,87,.03);
   }
 
-  /* ---------- PROFILE TAB ---------- */
+  .game-name{
+    font-size:14px;
+    font-weight:700;
+  }
 
-  #tab-profile{ display:none; }
-
-  .profile-card{
+  .profile-container{
     background:linear-gradient(180deg, var(--surface-2), var(--surface));
     border:1px solid var(--border);
     border-radius:var(--radius-lg);
-    padding:20px 18px;
-    margin-bottom:14px;
+    padding:30px 20px;
+    text-align:center;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
   }
 
-  .profile-avatar-lg{
-    width:64px; height:64px;
+  .big-avatar{
+    width:72px; height:72px;
+    background:#2a224a;
     border-radius:50%;
-    margin:0 auto 12px;
     display:flex; align-items:center; justify-content:center;
-    font-size:30px;
-    background:radial-gradient(circle at 32% 28%, #3a3357, var(--surface));
-    border:1px solid var(--border);
+    font-size:32px;
+    margin-bottom:16px;
   }
 
   .profile-name{
-    text-align:center;
+    font-size:18px;
+    font-weight:700;
+    margin-bottom:6px;
+  }
+  
+  .badge{
+    font-size:11px;
+    padding:4px 12px;
+    border-radius:20px;
     font-weight:600;
-    font-size:15px;
-    margin-bottom:2px;
+    display:inline-block;
+    margin-bottom:20px;
+  }
+  .badge.not-linked{
+    background:rgba(255, 94, 94, 0.1);
+    color:#ff5e5e;
+    border:1px solid rgba(255, 94, 94, 0.2);
+  }
+  .badge.linked{
+    background:rgba(94, 255, 148, 0.1);
+    color:#5eff94;
+    border:1px solid rgba(94, 255, 148, 0.2);
   }
 
-  #dc-connect-box{
-    margin-top:14px;
-    padding-top:14px;
-    border-top:1px dashed var(--border);
+  .hint-text{
     font-size:13px;
-    line-height:1.5;
     color:var(--text-muted);
+    line-height:1.5;
+    margin-bottom:20px;
+    text-align:left;
+    width:100%;
+    border-top:1px dashed var(--border);
+    padding-top:16px;
   }
-
-  .dc-form{
+  
+  .input-group{
     display:flex;
-    gap:8px;
-    margin-top:10px;
+    width:100%;
+    gap:10px;
   }
 
-  /* ---------- SHARED FORM ELEMENTS ---------- */
-
-  input[type="number"], input[type="text"]{
+  input{
+    flex:1;
     background:rgba(0,0,0,.28);
     border:1px solid var(--border);
-    border-radius:var(--radius-sm);
-    padding:11px 12px;
+    color:var(--text);
+    padding:14px;
+    border-radius:12px;
     font-size:14px;
-    width:100%;
     outline:none;
-    transition:border-color .15s ease;
   }
-  input[type="number"]:focus, input[type="text"]:focus{
-    border-color:var(--violet);
-  }
-
-  .btn{
-    border:none;
-    border-radius:var(--radius-sm);
-    padding:12px 16px;
-    font-family:'Space Grotesque',sans-serif;
-    font-weight:600;
-    font-size:13.5px;
-    cursor:pointer;
-    transition:transform .12s ease, filter .12s ease;
-  }
-  .btn:active{ transform:scale(.96); }
-
-  .btn-primary{
+  input:focus{ border-color:var(--violet); }
+  
+  .btn-link{
     background:linear-gradient(180deg, var(--violet), #6f52e0);
-    color:#fff;
+    border:none;
+    color:white;
+    padding:14px 24px;
+    border-radius:12px;
+    font-size:14px;
+    font-weight:700;
+    cursor:pointer;
   }
-  .btn-gold{
-    background:linear-gradient(180deg, var(--gold), #e0a935);
-    color:#211404;
-  }
-  .btn-ghost{
-    background:var(--surface-2);
-    border:1px solid var(--border);
-    color:var(--text);
-  }
-  .btn-danger{
-    background:linear-gradient(180deg, var(--red), #d43655);
-    color:#fff;
-  }
-  .btn-block{ width:100%; }
+  .btn-link:disabled{ background:#444; color:#888; cursor:not-allowed; }
 
-  .btn-row{
-    display:flex;
-    gap:10px;
-  }
-  .btn-row .btn{ flex:1; }
-
-  /* ---------- GAME SCREENS ---------- */
-
-  .game-screen{
-    display:none;
+  .nav-bar{
     position:fixed;
-    inset:0;
-    z-index:60;
-    background:
-      radial-gradient(600px 380px at 20% 0%, rgba(139,107,255,.18), transparent 55%),
-      linear-gradient(180deg, var(--bg-2), var(--bg-1) 45%);
-    flex-direction:column;
-    max-width:480px;
-    margin:0 auto;
-  }
-
-  .gs-header{
-    display:flex;
-    align-items:center;
-    gap:12px;
-    padding:18px;
-  }
-
-  .btn-back{
-    width:38px; height:38px;
-    border-radius:50%;
-    border:1px solid var(--border);
-    background:var(--surface-2);
-    color:var(--text);
-    font-size:16px;
-    display:flex; align-items:center; justify-content:center;
-    cursor:pointer;
-    flex:none;
-  }
-  .btn-back:active{ transform:scale(.92); }
-
-  .gs-title{
-    font-family:'Space Grotesque',sans-serif;
-    font-weight:700;
-    font-size:17px;
-  }
-
-  .gs-body{
-    flex:1;
-    padding:6px 18px 24px;
-    display:flex;
-    flex-direction:column;
-    gap:16px;
-    overflow-y:auto;
-  }
-
-  .stage{
-    background:linear-gradient(180deg, var(--surface-2), var(--surface));
-    border:1px solid var(--border);
-    border-radius:var(--radius-lg);
-    padding:26px 18px;
-    text-align:center;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    gap:10px;
-    min-height:140px;
-    justify-content:center;
-  }
-
-  .stage-result{
-    font-size:34px;
-    font-weight:700;
-    font-family:'JetBrains Mono',monospace;
-    letter-spacing:.02em;
-  }
-
-  .stage-msg{
-    font-size:14px;
-    color:var(--text-muted);
-    min-height:18px;
-    font-weight:600;
-  }
-
-  .bet-field{
-    display:flex;
-    flex-direction:column;
-    gap:6px;
-  }
-  .bet-field label{
-    font-size:11px;
-    text-transform:uppercase;
-    letter-spacing:.1em;
-    color:var(--text-muted);
-    font-weight:600;
-  }
-
-  .choice-row{
-    display:flex;
-    gap:10px;
-  }
-  .choice-btn{
-    flex:1;
-    background:var(--surface-2);
-    border:1px solid var(--border);
-    border-radius:var(--radius-md);
-    padding:16px 8px;
-    font-size:26px;
-    cursor:pointer;
-    transition:transform .12s ease, border-color .12s ease;
-  }
-  .choice-btn:active{ transform:scale(.94); }
-  .choice-btn:hover{ border-color:var(--violet-dim); }
-
-  /* Wheel */
-  .wheel-wrap{
-    display:flex; align-items:center; justify-content:center;
-    padding:10px 0;
-  }
-  #wheel-obj{
-    width:150px; height:150px;
-    border-radius:50%;
-    background:conic-gradient(
-      var(--violet) 0deg 60deg,
-      var(--gold) 60deg 120deg,
-      var(--red) 120deg 180deg,
-      var(--teal) 180deg 240deg,
-      var(--surface-2) 240deg 300deg,
-      var(--gold) 300deg 360deg
-    );
-    border:4px solid var(--surface-2);
-    box-shadow:0 0 0 1px var(--border), 0 20px 40px -20px rgba(139,107,255,.6);
-    transition:transform 2s cubic-bezier(.2,.8,.2,1);
-    position:relative;
-  }
-  .wheel-pin{
-    position:absolute;
-    top:-14px; left:50%;
+    bottom:16px;
+    left:50%;
     transform:translateX(-50%);
-    font-size:20px;
-  }
-
-  /* Blackjack */
-  .bj-hand{
-    width:100%;
-    text-align:left;
-  }
-  .bj-hand-row{
-    display:flex;
-    justify-content:space-between;
-    align-items:baseline;
-    font-size:11px;
-    text-transform:uppercase;
-    letter-spacing:.08em;
-    color:var(--text-muted);
-    font-weight:600;
-    margin-bottom:4px;
-  }
-  .bj-cards{
-    font-family:'JetBrains Mono',monospace;
-    font-size:15px;
-    font-weight:700;
-  }
-  .bj-score{
-    font-family:'JetBrains Mono',monospace;
-    color:var(--gold);
-  }
-  .bj-divider{
-    height:1px;
-    background:var(--border);
-    margin:10px 0;
-  }
-
-  /* Mines */
-  .mines-grid{
-    display:grid;
-    grid-template-columns:repeat(5, 1fr);
-    gap:8px;
-    width:100%;
-  }
-  .grid-cell{
-    aspect-ratio:1;
-    background:var(--surface-2);
+    width:calc(100% - 32px);
+    max-width:448px;
+    height:60px;
+    background:rgba(19, 16, 31, 0.94);
+    border-radius:50px;
     border:1px solid var(--border);
-    border-radius:var(--radius-sm);
-    display:flex; align-items:center; justify-content:center;
-    font-size:19px;
-    cursor:pointer;
-    transition:transform .1s ease, background .15s ease;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    padding:4px;
+    backdrop-filter:blur(10px);
+    z-index:100;
   }
-  .grid-cell:active{ transform:scale(.9); }
-  .grid-cell.opened{
-    background:rgba(61,220,151,.14);
-    border-color:rgba(61,220,151,.5);
-    cursor:default;
-  }
-  .grid-cell.exploded{
-    background:rgba(255,77,109,.18);
-    border-color:var(--red);
-    cursor:default;
-  }
-  .mines-topline{
+
+  .nav-item{
     display:flex;
-    justify-content:space-between;
     align-items:center;
-    width:100%;
-    font-size:12px;
+    justify-content:center;
+    gap:8px;
+    border-radius:40px;
     color:var(--text-muted);
-    font-weight:600;
-  }
-  #mine-mult{
-    font-family:'JetBrains Mono',monospace;
-    color:var(--teal);
-    font-size:14px;
-  }
-
-  /* Double */
-  #db-bank{
-    font-family:'JetBrains Mono',monospace;
-    font-size:20px;
+    font-size:13px;
     font-weight:700;
-    color:var(--gold);
+    cursor:pointer;
   }
-
-  /* Russian roulette */
-  #ru-gun{
-    font-size:48px;
-  }
-
-  @media (max-width:360px){
-    .balance-value{ font-size:20px; }
+  .nav-item.active{
+    background:linear-gradient(180deg, var(--violet), #6f52e0);
+    color:#ffffff;
   }
 </style>
 </head>
 <body>
 
 <div class="app">
-
-  <!-- ================= HEADER / SCOREBOARD ================= -->
-  <div class="app-header">
-    <div class="brand"><span class="dot"></span> HortCoin Casino</div>
-
-    <div class="scoreboard">
-      <div class="scoreboard-top">
-        <div class="user-block">
-          <div class="avatar-chip" id="user-avatar">🎮</div>
-          <div class="user-meta">
-            <span id="user-name">Гравець</span>
-            <span id="dc-role"></span>
-          </div>
+    <div class="app-header">
+        <div class="brand"><span class="dot"></span> Hortcoin Casino</div>
+        
+        <div class="scoreboard">
+            <div class="scoreboard-top">
+                <div class="user-block">
+                    <div class="avatar-chip">🎮</div>
+                    <div class="user-meta">
+                        <span id="top-username">Завантаження...</span>
+                    </div>
+                </div>
+                <div class="balance-readout">
+                    <div class="balance-label">Баланс</div>
+                    <div class="balance-value"><span id="top-balance">0</span> 🪙</div>
+                </div>
+            </div>
+            <div class="stat-row">
+                <div class="stat-pill">
+                    <div class="stat-num" id="top-games">0</div>
+                    <div class="stat-label">Ігор</div>
+                </div>
+                <div class="stat-pill">
+                    <div class="stat-num" id="top-wins">0</div>
+                    <div class="stat-label">Перемог</div>
+                </div>
+            </div>
         </div>
-        <div class="balance-readout">
-          <div class="balance-label">Баланс</div>
-          <div class="balance-value"><span id="global-balance">0</span> 🪙</div>
+    </div>
+
+    <div class="content">
+        <!-- СТОРІНКА ІГОР -->
+        <div id="page-games">
+            <div class="section-title">Ігри</div>
+            <div class="games-grid">
+                <div class="game-card"><div class="game-icon-wrapper">🎰</div><div class="game-name">Слоти</div></div>
+                <div class="game-card"><div class="game-icon-wrapper">🃏</div><div class="game-name">Блекджек</div></div>
+                <div class="game-card"><div class="game-icon-wrapper">🥤</div><div class="game-name">Наперстки</div></div>
+                <div class="game-card"><div class="game-icon-wrapper">🎡</div><div class="game-name">Колесо</div></div>
+            </div>
         </div>
-      </div>
 
-      <div class="stat-row">
-        <div class="stat-pill">
-          <span class="n" id="st-games">0</span>
-          <span class="l">Ігор</span>
+        <!-- СТОРІНКА ПРОФІЛЮ -->
+        <div id="page-profile" style="display: none;">
+            <div class="section-title">Профіль</div>
+            <div class="profile-container">
+                <div class="big-avatar">🎮</div>
+                <div class="profile-name" id="profile-tg-name">Користувач</div>
+                
+                <div id="link-status-badge" class="badge not-linked">Discord не пов'язано</div>
+
+                <div id="link-form" style="width: 100%;">
+                    <div class="hint-text">
+                        Введіть код прив'язки, який видав Discord-бот по команді /зв_язати_телеграм (діє 5 хвилин).
+                    </div>
+                    <div class="input-group">
+                        <input type="text" id="code-input" placeholder="898935" maxlength="6" inputmode="numeric">
+                        <button class="btn-link" id="btn-link-submit" onclick="submitLinkCode()">Зв'язати</button>
+                    </div>
+                </div>
+                
+                <div id="link-success-msg" style="display: none; color: #5eff94; font-size: 14px; margin-top: 10px;">
+                    🎉 Акаунт успішно синхронізовано з Discord!
+                </div>
+            </div>
         </div>
-        <div class="stat-pill">
-          <span class="n" id="st-wins">0</span>
-          <span class="l">Перемог</span>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ================= CONTENT ================= -->
-  <div class="content">
-
-    <!-- ---------- TAB: GAMES ---------- -->
-    <div id="tab-games" class="active">
-      <div class="section-title">Ігри</div>
-      <div class="game-grid">
-        <div class="game-card" onclick="showGame('game-slots')">
-          <div class="icon">🎰</div><div class="name">Слоти</div>
-        </div>
-        <div class="game-card" onclick="showGame('game-bj')">
-          <div class="icon">🃏</div><div class="name">Блекджек</div>
-        </div>
-        <div class="game-card" onclick="showGame('game-thimbles')">
-          <div class="icon">🥤</div><div class="name">Наперстки</div>
-        </div>
-        <div class="game-card" onclick="showGame('game-wheel')">
-          <div class="icon">🎡</div><div class="name">Колесо</div>
-        </div>
-        <div class="game-card" onclick="showGame('game-dice')">
-          <div class="icon">🎲</div><div class="name">Кістки</div>
-        </div>
-        <div class="game-card" onclick="showGame('game-roulette')">
-          <div class="icon">🔴</div><div class="name">Рулетка</div>
-        </div>
-        <div class="game-card" onclick="showGame('game-double')">
-          <div class="icon">2️⃣</div><div class="name">Подвоєння</div>
-        </div>
-        <div class="game-card" onclick="showGame('game-mines')">
-          <div class="icon">💣</div><div class="name">Міни</div>
-        </div>
-        <div class="game-card" onclick="showGame('game-truck')">
-          <div class="icon">🚚</div><div class="name">Фура</div>
-        </div>
-        <div class="game-card" onclick="showGame('game-rps')">
-          <div class="icon">✊</div><div class="name">КНП</div>
-        </div>
-        <div class="game-card" onclick="showGame('game-ru')" style="grid-column:span 2;">
-          <div class="icon">🔫</div><div class="name">Російська рулетка</div>
-        </div>
-      </div>
     </div>
 
-    <!-- ---------- TAB: PROFILE ---------- -->
-    <div id="tab-profile">
-      <div class="section-title">Профіль</div>
-      <div class="profile-card">
-        <div class="profile-avatar-lg">🎮</div>
-        <div class="profile-name" id="profile-name-echo">—</div>
-        <div id="dc-badge" class="discord-status" style="display:block; width:fit-content; margin:6px auto 0;">Discord не пов'язано</div>
-
-        <div id="dc-connect-box">
-          Введіть код прив'язки, який видав Discord-бот по команді /зв_язати_телеграм (діє 5 хвилин).
-          <div class="dc-form">
-            <input type="text" id="dc-code-input" placeholder="Код прив'язки (6 цифр)" maxlength="6" inputmode="numeric">
-            <button class="btn btn-primary" onclick="connectDiscord()">Зв'язати</button>
-          </div>
-        </div>
-      </div>
+    <div class="nav-bar">
+        <div class="nav-item active" id="nav-games" onclick="switchPage('games')">🎮 Ігри</div>
+        <div class="nav-item" id="nav-profile" onclick="switchPage('profile')">👤 Профіль</div>
     </div>
-
-  </div>
-
-  <!-- ================= BOTTOM NAV ================= -->
-  <div class="bottom-nav">
-    <button id="btn-tab-games" class="nav-btn active" onclick="showScreen('tab-games')">🎮 Ігри</button>
-    <button id="btn-tab-profile" class="nav-btn" onclick="showScreen('tab-profile')">👤 Профіль</button>
-  </div>
-
-  <!-- ================= GAME SCREENS ================= -->
-
-  <!-- Slots -->
-  <div id="game-slots" class="game-screen">
-    <div class="gs-header">
-      <button class="btn-back" onclick="backToMenu()">←</button>
-      <div class="gs-title">🎰 Слоти</div>
-    </div>
-    <div class="gs-body">
-      <div class="stage">
-        <div class="stage-result" id="slots-res">🍒 🍋 🍇</div>
-        <div class="stage-msg" id="slots-msg"></div>
-      </div>
-      <div class="bet-field">
-        <label>Ставка</label>
-        <input type="number" id="slots-bet" value="50">
-      </div>
-      <button class="btn btn-gold btn-block" onclick="playSlots()">Крутити</button>
-    </div>
-  </div>
-
-  <!-- Blackjack -->
-  <div id="game-bj" class="game-screen">
-    <div class="gs-header">
-      <button class="btn-back" onclick="backToMenu()">←</button>
-      <div class="gs-title">🃏 Блекджек</div>
-    </div>
-    <div class="gs-body">
-      <div class="stage" style="align-items:stretch; text-align:left;">
-        <div class="bj-hand">
-          <div class="bj-hand-row"><span>Дилер</span><span class="bj-score" id="bj-d-score">0</span></div>
-          <div class="bj-cards" id="bj-d-cards">—</div>
-        </div>
-        <div class="bj-divider"></div>
-        <div class="bj-hand">
-          <div class="bj-hand-row"><span>Ви</span><span class="bj-score" id="bj-p-score">0</span></div>
-          <div class="bj-cards" id="bj-p-cards">—</div>
-        </div>
-        <div class="stage-msg" id="bj-msg" style="text-align:center; margin-top:10px;"></div>
-      </div>
-
-      <div id="bj-ctrls" class="bet-field" style="display:flex;">
-        <label>Ставка</label>
-        <input type="number" id="bj-bet" value="50">
-        <button id="bj-btn-start" class="btn btn-gold btn-block" onclick="startBJ()">Роздати</button>
-      </div>
-
-      <div class="btn-row">
-        <button id="bj-btn-hit" class="btn btn-primary" style="display:none;" onclick="hitBJ()">Ще карту</button>
-        <button id="bj-btn-stand" class="btn btn-ghost" style="display:none;" onclick="standBJ()">Досить</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Thimbles -->
-  <div id="game-thimbles" class="game-screen">
-    <div class="gs-header">
-      <button class="btn-back" onclick="backToMenu()">←</button>
-      <div class="gs-title">🥤 Наперстки</div>
-    </div>
-    <div class="gs-body">
-      <div class="stage">
-        <div class="stage-msg" id="thim-msg">Оберіть наперсток з кулькою</div>
-      </div>
-      <div class="choice-row">
-        <button class="choice-btn" onclick="guessThimble(0)">🥤</button>
-        <button class="choice-btn" onclick="guessThimble(1)">🥤</button>
-        <button class="choice-btn" onclick="guessThimble(2)">🥤</button>
-      </div>
-      <div class="bet-field">
-        <label>Ставка</label>
-        <input type="number" id="thim-bet" value="50">
-      </div>
-    </div>
-  </div>
-
-  <!-- Wheel -->
-  <div id="game-wheel" class="game-screen">
-    <div class="gs-header">
-      <button class="btn-back" onclick="backToMenu()">←</button>
-      <div class="gs-title">🎡 Колесо фортуни</div>
-    </div>
-    <div class="gs-body">
-      <div class="stage">
-        <div class="wheel-wrap">
-          <div class="wheel-pin">🔻</div>
-          <div id="wheel-obj"></div>
-        </div>
-        <div class="stage-msg" id="wheel-msg"></div>
-      </div>
-      <div class="bet-field">
-        <label>Ставка</label>
-        <input type="number" id="wheel-bet" value="50">
-      </div>
-      <button class="btn btn-gold btn-block" onclick="playWheel()">Крутити колесо</button>
-    </div>
-  </div>
-
-  <!-- Dice -->
-  <div id="game-dice" class="game-screen">
-    <div class="gs-header">
-      <button class="btn-back" onclick="backToMenu()">←</button>
-      <div class="gs-title">🎲 Кістки</div>
-    </div>
-    <div class="gs-body">
-      <div class="stage">
-        <div class="stage-result" id="dice-res" style="font-size:22px;">👨‍💻 — vs 🤖 —</div>
-        <div class="stage-msg" id="dice-msg"></div>
-      </div>
-      <div class="bet-field">
-        <label>Ставка</label>
-        <input type="number" id="dice-bet" value="50">
-      </div>
-      <button class="btn btn-gold btn-block" onclick="playDice()">Кинути кістки</button>
-    </div>
-  </div>
-
-  <!-- Roulette -->
-  <div id="game-roulette" class="game-screen">
-    <div class="gs-header">
-      <button class="btn-back" onclick="backToMenu()">←</button>
-      <div class="gs-title">🔴 Рулетка</div>
-    </div>
-    <div class="gs-body">
-      <div class="stage">
-        <div class="stage-result" id="roul-res">—</div>
-        <div class="stage-msg" id="roul-msg"></div>
-      </div>
-      <div class="bet-field">
-        <label>Ставка</label>
-        <input type="number" id="roul-bet" value="50">
-      </div>
-      <div class="btn-row">
-        <button class="btn btn-danger" onclick="playRoulette('red')">🔴 Червоне</button>
-        <button class="btn btn-ghost" onclick="playRoulette('black')">⚫ Чорне</button>
-        <button class="btn btn-primary" onclick="playRoulette('zero')">🟢 Зеро</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Double -->
-  <div id="game-double" class="game-screen">
-    <div class="gs-header">
-      <button class="btn-back" onclick="backToMenu()">←</button>
-      <div class="gs-title">2️⃣ Подвоєння</div>
-    </div>
-    <div class="gs-body">
-      <div class="stage">
-        <div id="db-bank">Поточний банк: 0 🪙</div>
-        <div class="stage-msg" id="db-msg"></div>
-      </div>
-
-      <div id="db-input-zone" class="bet-field" style="display:flex;">
-        <label>Ставка</label>
-        <input type="number" id="db-bet" value="50">
-      </div>
-
-      <button class="btn btn-gold btn-block" onclick="startDouble()">Подвоїти</button>
-      <button id="db-cash" class="btn btn-primary btn-block" style="display:none;" onclick="cashoutDouble()">Забрати банк</button>
-    </div>
-  </div>
-
-  <!-- Mines -->
-  <div id="game-mines" class="game-screen">
-    <div class="gs-header">
-      <button class="btn-back" onclick="backToMenu()">←</button>
-      <div class="gs-title">💣 Міни</div>
-    </div>
-    <div class="gs-body">
-      <div class="mines-topline">
-        <span>Множник: <span id="mine-mult">x1.00</span></span>
-      </div>
-      <div id="mines-board" class="mines-grid"></div>
-      <div class="stage-msg" id="mine-msg" style="text-align:center;"></div>
-
-      <div id="mine-input-zone" class="bet-field" style="display:flex;">
-        <label>Ставка</label>
-        <input type="number" id="mine-bet" value="50">
-      </div>
-
-      <button id="mine-start" class="btn btn-gold btn-block" onclick="startMinesGame()">Почати</button>
-      <button id="mine-cash" class="btn btn-primary btn-block" style="display:none;" onclick="cashoutMinesGame()">Забрати виграш</button>
-    </div>
-  </div>
-
-  <!-- Truck -->
-  <div id="game-truck" class="game-screen">
-    <div class="gs-header">
-      <button class="btn-back" onclick="backToMenu()">←</button>
-      <div class="gs-title">🚚 Вгадай фуру</div>
-    </div>
-    <div class="gs-body">
-      <div class="stage">
-        <div class="stage-result" style="font-size:44px;">🚚</div>
-        <div class="stage-msg" id="truck-msg">Фура порожня чи завантажена?</div>
-      </div>
-      <div class="bet-field">
-        <label>Ставка</label>
-        <input type="number" id="truck-bet" value="50">
-      </div>
-      <div class="btn-row">
-        <button class="btn btn-primary" onclick="playTruck(true)">Завантажена</button>
-        <button class="btn btn-ghost" onclick="playTruck(false)">Порожня</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Rock Paper Scissors -->
-  <div id="game-rps" class="game-screen">
-    <div class="gs-header">
-      <button class="btn-back" onclick="backToMenu()">←</button>
-      <div class="gs-title">✊ Камінь, ножиці, папір</div>
-    </div>
-    <div class="gs-body">
-      <div class="stage">
-        <div class="stage-msg" id="rps-msg">Оберіть свій хід</div>
-      </div>
-      <div class="choice-row">
-        <button class="choice-btn" onclick="playRPS('✊')">✊</button>
-        <button class="choice-btn" onclick="playRPS('✌')">✌</button>
-        <button class="choice-btn" onclick="playRPS('✋')">✋</button>
-      </div>
-      <div class="bet-field">
-        <label>Ставка</label>
-        <input type="number" id="rps-bet" value="50">
-      </div>
-    </div>
-  </div>
-
-  <!-- Russian roulette -->
-  <div id="game-ru" class="game-screen">
-    <div class="gs-header">
-      <button class="btn-back" onclick="backToMenu()">←</button>
-      <div class="gs-title">🔫 Російська рулетка</div>
-    </div>
-    <div class="gs-body">
-      <div class="stage">
-        <div id="ru-gun">🔫</div>
-        <div class="stage-msg" id="ru-msg">Один шанс із шести...</div>
-      </div>
-      <div class="bet-field">
-        <label>Ставка</label>
-        <input type="number" id="ru-bet" value="50">
-      </div>
-      <button class="btn btn-danger btn-block" onclick="playRussianRoulette()">Натиснути на курок</button>
-    </div>
-  </div>
-
 </div>
 
 <script>
-        // ==========================================================
-        // АДРЕСА СЕРВЕРА (server.py) НА БОТХОСТИНГУ.
-        // Заміни на реальну адресу твого хосту, наприклад:
-        //   "https://your-app-name.botost.io"
-        //   "http://185.xxx.xxx.xxx:20268"  (сервер на своєму порту)
-        // ВАЖЛИВО: якщо в адресі немає HTTPS, а сама index.html лежить
-        // на GitHub Pages (https://...github.io/...), браузер заблокує
-        // запити через Mixed Content — тому на сервері краще тримати
-        // https (через Cloudflare/Nginx-проксі або сам ботхостинг це дає).
-        // ==========================================================
-        const API_BASE = "https://ВАШ-ХОСТ-СЕРВЕРА.example.com";
-
         const tg = window.Telegram.WebApp;
         tg.expand();
+        
+        // Твоя точна адреса бекенду на Bot-hosting
+        const SERVER_HOST = "https://prem-eu2.bot-hosting.net:20268"; 
 
-        // Отримуємо Telegram ID користувача
+        const initData = tg.initData;
         const tgUser = tg.initDataUnsafe && tg.initDataUnsafe.user ? tg.initDataUnsafe.user : null;
-        const tgId = tgUser ? tgUser.id : 123456789; // Дефолтний ID для тестів у браузері
-        const tgInitData = tg.initData || ""; // Сирі initData - сервер перевіряє підпис Telegram і за цим видає сесію
 
-        // Автоматично підставляємо ім'я з Telegram
         if (tgUser) {
-            document.getElementById('user-name').innerText = tgUser.first_name;
-            if (tgUser.username) {
-                document.getElementById('user-name').innerText += " (@" + tgUser.username + ")";
-            }
-            const echo = document.getElementById('profile-name-echo');
-            if (echo) echo.innerText = document.getElementById('user-name').innerText;
+            let nameLine = tgUser.first_name;
+            if (tgUser.username) nameLine += ` (@${tgUser.username})`;
+            document.getElementById('profile-tg-name').innerText = nameLine;
         }
 
-        // Глобальні змінні стану (завантажуються з бази даних)
-        let balance = 1000;
-        let statsGames = 0;
-        let statsWins = 0;
-        let isConnectedToDiscord = false;
-        let connectedDiscordId = null;
-
-        // Одноразовий ключ сесії (sessions.db на сервері).
-        // Видається при кожному вході в міні-застосунок і живе лише в пам'яті сторінки:
-        // при перезаході генерується новий ключ, старий одразу стає недійсним.
-        let sessionToken = null;
-
-        // Створення/оновлення сесії. Викликається один раз при старті додатка.
-        async function startSession() {
+        async function apiPost(endpoint, body) {
             try {
-                const response = await fetch(API_BASE + '/api/session/start', {
+                const response = await fetch(`${SERVER_HOST}${endpoint}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ tg_id: tgId, init_data: tgInitData })
+                    body: JSON.stringify({ init_data: initData, ...body })
                 });
-                const data = await response.json();
-                if (data.status === 'success') {
-                    sessionToken = data.session_token;
-                } else {
-                    console.error('Не вдалося створити сесію:', data.message);
+                
+                if ([200, 201, 400, 401, 403, 404].includes(response.status)) {
+                    return await response.json();
                 }
+                return { error: `Помилка сервера: код ${response.status}` };
             } catch (error) {
-                console.error("Помилка створення сесії:", error);
+                console.error("Fetch Error:", error);
+                return { error: "Помилка підключення. Перевірте з'єднання з сервером." };
             }
         }
 
-        // Єдина обгортка для всіх запитів до бекенду.
-        // Всі ендпоінти працюють через POST і приймають session_token у тілі запиту.
-        async function apiPost(endpoint, payload = {}) {
-            const doRequest = () => fetch(API_BASE + endpoint, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ session_token: sessionToken, ...payload })
-            });
+        async function loadUserData() {
+            const data = await apiPost('/api/user/init', {});
 
-            let response = await doRequest();
-
-            // Сесія протухла/невалідна (401) - перевидаємо ключ і повторюємо запит один раз
-            if (response.status === 401) {
-                await startSession();
-                response = await doRequest();
+            if(data.error) {
+                document.getElementById('top-username').innerText = "Не пов'язано";
+                return;
             }
-
-            return response.json();
-        }
-
-        // Функція отримання профілю з сервера SQLite3 під час запуску додатка
-        async function loadProfile() {
-            try {
-                const data = await apiPost('/api/profile');
-
-                balance = data.balance;
-                statsGames = data.games;
-                statsWins = data.wins;
-                isConnectedToDiscord = data.connected;
-                connectedDiscordId = data.discord_id;
-
-                if (isConnectedToDiscord) {
-                    document.getElementById('dc-badge').innerText = "Пов'язано з Discord";
-                    document.getElementById('dc-badge').className = "discord-status dc-connected";
-                    document.getElementById('user-avatar').innerText = "👑";
-                    document.getElementById('dc-role').innerText = data.role;
-                    document.getElementById('dc-connect-box').innerHTML = "<b style='color:#5865F2;'>Синхронізація активна. Баланс HortCoin спільний з Discord!</b>";
-                }
-                updateBal();
-            } catch (error) {
-                console.error("Помилка завантаження профілю з бази:", error);
-            }
-        }
-
-        // Функція надсилання нових даних у базу після завершення гри
-        async function saveGameResultToDB(isWin) {
-            statsGames++;
-            if (isWin) statsWins++;
-            updateBal();
-
-            // Якщо Discord не прив'язаний, зберігаємо локально або просто оновлюємо інтерфейс
-            if (!isConnectedToDiscord) return;
-
-            try {
-                await apiPost('/api/update_balance', {
-                    balance: balance,
-                    is_win: isWin
-                });
-            } catch (error) {
-                console.error("Помилка збереження результату гри в SQLite:", error);
-            }
-        }
-
-        // Функція прив'язки Discord-акаунту за одноразовим кодом з команди /зв_язати_телеграм
-        async function connectDiscord() {
-            const dcCodeInput = document.getElementById('dc-code-input').value.trim();
-            if (!dcCodeInput) { alert("Будь ласка, введіть код прив'язки з Discord!"); return; }
-
-            try {
-                const data = await apiPost('/api/sync', { link_code: dcCodeInput });
-
-                if (data.status === "success") {
-                    alert("Акаунт успішно синхронізовано з базою Discord!");
-                    loadProfile(); // Перезавантажуємо оновлені дані профілю та балансу
-                } else {
-                    alert(data.message || "Не вдалося синхронізувати акаунт. Перевірте код.");
-                }
-            } catch (error) {
-                alert("Помилка підключення. Перевірте з'єднання з сервером.");
-            }
-        }
-
-        function updateBal() { 
-            document.getElementById('global-balance').innerText = balance; 
-            document.getElementById('st-games').innerText = statsGames;
-            document.getElementById('st-wins').innerText = statsWins;
-        }
-
-        function getBet(id) { return parseInt(document.getElementById(id).value) || 0; }
-
-        // Керування головними табами навігації
-        function showScreen(tabId) {
-            document.getElementById('tab-games').classList.remove('active');
-            document.getElementById('tab-profile').classList.remove('active');
-            document.getElementById('btn-tab-games').classList.remove('active');
-            document.getElementById('btn-tab-profile').classList.remove('active');
             
-            document.getElementById(tabId).classList.add('active');
-            document.getElementById('btn-' + tabId).classList.add('active');
+            if (data.is_linked) {
+                document.getElementById('top-username').innerText = data.username;
+                document.getElementById('top-balance').innerText = data.balance;
+                document.getElementById('top-games').innerText = data.games;
+                document.getElementById('top-wins').innerText = data.wins;
+                
+                const badge = document.getElementById('link-status-badge');
+                badge.innerText = `Discord: ${data.username}`;
+                badge.className = "badge linked";
+                document.getElementById('link-form').style.display = 'none';
+            } else {
+                document.getElementById('top-username').innerText = "Не пов'язано";
+            }
+        }
+
+        async function submitLinkCode() {
+            const codeInput = document.getElementById('code-input');
+            const code = codeInput.value.trim();
+            const submitBtn = document.getElementById('btn-link-submit');
             
-            document.getElementById('tab-games').style.display = tabId === 'tab-games' ? 'block' : 'none';
-            document.getElementById('tab-profile').style.display = tabId === 'tab-profile' ? 'block' : 'none';
-            const screens = document.getElementsByClassName('game-screen');
-            for(let s of screens) s.style.display = 'none';
-        }
-
-        function showGame(gameId) {
-            document.getElementById('tab-games').style.display = 'none';
-            document.getElementById('tab-profile').style.display = 'none';
-            document.getElementById(gameId).style.display = 'flex';
-        }
-
-        function backToMenu() {
-            const screens = document.getElementsByClassName('game-screen');
-            for(let s of screens) s.style.display = 'none';
-            document.getElementById('tab-games').style.display = 'block';
-            document.getElementById('tab-profile').style.display = 'none';
-            document.getElementById('tab-games').classList.add('active');
-            document.getElementById('btn-tab-games').classList.add('active');
-            document.getElementById('tab-profile').classList.remove('active');
-            document.getElementById('btn-tab-profile').classList.remove('active');
-        }
-
-        // ================= ЛОГІКА ІГОР З ІНТЕГРАЦІЄЮ БАЗИ =================
-        function playSlots() {
-            let b = getBet('slots-bet'); if(b > balance || b <= 0) return; balance -= b;
-            const items = ['🍒', '🍋', '🍇', '💎', '7️⃣'];
-            let r1 = items[Math.floor(Math.random()*5)], r2 = items[Math.floor(Math.random()*5)], r3 = items[Math.floor(Math.random()*5)];
-            document.getElementById('slots-res').innerText = `${r1} ${r2} ${r3}`;
-            if(r1===r2 && r2===r3) { let w = r1==='7️⃣'? b*10:b*4; balance+=w; document.getElementById('slots-msg').innerText=`🎉 Джекпот! +${w}`; saveGameResultToDB(true); }
-            else if(r1===r2 || r2===r3 || r1===r3) { let w = Math.floor(b*1.4); balance+=w; document.getElementById('slots-msg').innerText=`💰 Виграш! +${w}`; saveGameResultToDB(true); }
-            else { document.getElementById('slots-msg').innerText='😢 Програш!'; saveGameResultToDB(false); }
-        }
-
-        let bjDeck, bjP, bjD, bjB;
-        function startBJ() {
-            bjB = getBet('bj-bet'); if(bjB > balance || bjB <= 0) return; balance -= bjB; updateBal();
-            bjDeck = [2,3,4,5,6,7,8,9,10,10,10,10,11,2,3,4,5,6,7,8,9,10,10,10,10,11];
-            bjP = [drawBJ(), drawBJ()]; bjD = [drawBJ()];
-            document.getElementById('bj-btn-start').style.display = 'none';
-            document.getElementById('bj-btn-hit').style.display = 'inline-block';
-            document.getElementById('bj-btn-stand').style.display = 'inline-block';
-            document.getElementById('bj-ctrls').style.display = 'none';
-            upBJ();
-        }
-        function drawBJ() { return bjDeck.splice(Math.floor(Math.random()*bjDeck.length), 1)[0]; }
-        function sumBJ(h) { return h.reduce((x,y)=>x+y,0); }
-        function upBJ() {
-            document.getElementById('bj-p-cards').innerText = bjP.join(', ');
-            document.getElementById('bj-d-cards').innerText = bjD.join(', ') + ', ❓';
-            document.getElementById('bj-p-score').innerText = sumBJ(bjP);
-            document.getElementById('bj-d-score').innerText = sumBJ(bjD);
-        }
-        function hitBJ() { bjP.push(drawBJ()); upBJ(); if(sumBJ(bjP) > 21) endBJ('Перебір! Ви програли.', 0, false); }
-        function standBJ() {
-            while(sumBJ(bjD) < 17) bjD.push(drawBJ());
-            document.getElementById('bj-d-cards').innerText = bjD.join(', ');
-            document.getElementById('bj-d-score').innerText = sumBJ(bjD);
-            let sp = sumBJ(bjP), sd = sumBJ(bjD);
-            if(sd > 21 || sp > sd) endBJ('🎉 Перемога!', bjB*2, true);
-            else if(sp < sd) endBJ('🤖 Дилер виграв.', 0, false);
-            else endBJ('🤝 Нічия.', bjB, true);
-        }
-        function endBJ(m, w, isWin) {
-            balance += w; document.getElementById('bj-msg').innerText = m;
-            document.getElementById('bj-btn-start').style.display = 'inline-block';
-            document.getElementById('bj-btn-hit').style.display = 'none';
-            document.getElementById('bj-btn-stand').style.display = 'none';
-            document.getElementById('bj-ctrls').style.display = 'flex';
-            saveGameResultToDB(isWin);
-        }
-
-        function guessThimble(idx) {
-            let b = getBet('thim-bet'); if(b > balance || b <= 0) return; balance -= b;
-            let winIdx = Math.floor(Math.random()*3);
-            if(idx === winIdx) { balance += b*2.5; document.getElementById('thim-msg').innerText = `🎉 Вгадали! (+${b*2.5} 🪙)`; saveGameResultToDB(true); }
-            else { document.getElementById('thim-msg').innerText = `😢 Кулька була під ${winIdx+1}.`; saveGameResultToDB(false); }
-        }
-
-        let rot = 0;
-        function playWheel() {
-            let b = getBet('wheel-bet'); if(b > balance || b <= 0) return; balance -= b; updateBal();
-            let mults = [0, 2, 0.5, 3, 0, 10]; let idx = Math.floor(Math.random()*mults.length);
-            rot += 1080 + (idx * 60); document.getElementById('wheel-obj').style.transform = `rotate(${rot}deg)`;
-            setTimeout(() => {
-                let w = Math.floor(b * mults[idx]); balance += w;
-                document.getElementById('wheel-msg').innerText = `Результат: x${mults[idx]} -> +${w} 🪙`;
-                saveGameResultToDB(mults[idx] >= 1);
-            }, 2000);
-        }
-
-        function playDice() {
-            let b = getBet('dice-bet'); if(b > balance || b <= 0) return; balance -= b;
-            let p = (Math.floor(Math.random()*6)+1)+(Math.floor(Math.random()*6)+1);
-            let d = (Math.floor(Math.random()*6)+1)+(Math.floor(Math.random()*6)+1);
-            document.getElementById('dice-res').innerText = `👨‍💻 ${p}  vs  🤖 ${d}`;
-            if(p > d) { balance += b*2; document.getElementById('dice-msg').innerText = '🎉 Перемога!'; saveGameResultToDB(true); }
-            else if(p < d) { document.getElementById('dice-msg').innerText = '🤖 Програш'; saveGameResultToDB(false); }
-            else { balance += b; document.getElementById('dice-msg').innerText = '🤝 Нічия'; saveGameResultToDB(true); }
-        }
-
-        function playRoulette(type) {
-            let b = getBet('roul-bet'); if(b > balance || b <= 0) return; balance -= b;
-            let roll = Math.floor(Math.random()*15); let color = roll === 0 ? 'zero' : (roll <= 7 ? 'red' : 'black');
-            document.getElementById('roul-res').innerText = roll === 0 ? '🟢 0' : (roll <= 7 ? `🔴 ${roll}` : `⚫ ${roll}`);
-            if(type === color) {
-                let w = type === 'zero' ? b*14 : b*2; balance += w;
-                document.getElementById('roul-msg').innerText = `🎉 Виграш! (+${w})`; saveGameResultToDB(true);
-            } else { document.getElementById('roul-msg').innerText = '😢 Програш.'; saveGameResultToDB(false); }
-        }
-
-        let dbCurrent = 0;
-        function startDouble() {
-            if(dbCurrent === 0) {
-                let b = getBet('db-bet'); if(b > balance || b <= 0) return; balance -= b; dbCurrent = b;
-                document.getElementById('db-input-zone').style.display = 'none';
-                document.getElementById('db-cash').style.display = 'inline-block';
+            if(code.length !== 6 || !/^\d+$/.test(code)) {
+                alert("Введіть точний 6-значний цифровий код!"); 
+                return; 
             }
-            if(Math.random() > 0.5) {
-                dbCurrent *= 2; document.getElementById('db-bank').innerText = `Поточний банк: ${dbCurrent} 🪙`;
-                document.getElementById('db-msg').innerText = '🔥 Подвоєно!';
+
+            submitBtn.disabled = true;
+            submitBtn.innerText = "Обробка...";
+
+            const data = await apiPost('/api/user/link', { code: code });
+
+            submitBtn.disabled = false;
+            submitBtn.innerText = "Зв'язати";
+
+            if (data.error) {
+                alert(data.error);
             } else {
-                document.getElementById('db-msg').innerText = `💥 Банк згорів!`; resetDouble(); saveGameResultToDB(false);
+                document.getElementById('link-form').style.display = 'none';
+                document.getElementById('link-success-msg').style.display = 'block';
+                loadUserData();
             }
         }
-        function cashoutDouble() {
-            balance += dbCurrent; document.getElementById('db-msg').innerText = `💰 Забрано: ${dbCurrent} 🪙`;
-            resetDouble(); saveGameResultToDB(true);
-        }
-        function resetDouble() { dbCurrent = 0; document.getElementById('db-bank').innerText = `Поточний банк: 0 🪙`; document.getElementById('db-input-zone').style.display = 'flex'; document.getElementById('db-cash').style.display = 'none'; updateBal(); }
 
-        let mGrid=[], mActive=false, mCount=0, mBet=0;
-        function resetMinesGame() {
-            const board = document.getElementById('mines-board'); board.innerHTML='';
-            for(let i=0; i<25; i++) {
-                let c = document.createElement('div'); c.className='grid-cell'; c.innerText='📦';
-                c.onclick=()=>clickMine(i, c); board.appendChild(c);
-            }
-        }
-        function startMinesGame() {
-            mBet = getBet('mine-bet'); if(mBet>balance || mBet<=0) return; balance-=mBet; updateBal();
-            mGrid = Array(25).fill(false); let placed=0;
-            while(placed<4) { let idx=Math.floor(Math.random()*25); if(!mGrid[idx]){mGrid[idx]=true; placed++;} }
-            mActive=true; mCount=0; resetMinesGame();
-            document.getElementById('mine-start').style.display='none'; document.getElementById('mine-cash').style.display='inline-block';
-            document.getElementById('mine-input-zone').style.display='none'; upMinesMult();
-        }
-        function upMinesMult() {
-            let mult = 1; for(let i=0; i<mCount; i++) mult *= (25-i)/(21-i);
-            document.getElementById('mine-mult').innerText = `x${mult.toFixed(2)}`; return mult;
-        }
-        function clickMine(i, el) {
-            if(!mActive || el.classList.contains('opened')) return;
-            if(mGrid[i]) {
-                el.classList.add('exploded'); el.innerText='💣'; mActive=false;
-                document.getElementById('mine-msg').innerText='💥 Ви підірвалися!'; endMinesGameUI(); saveGameResultToDB(false);
+        function switchPage(page) {
+            if(page === 'games') {
+                document.getElementById('page-games').style.display = 'block';
+                document.getElementById('page-profile').style.display = 'none';
+                document.getElementById('nav-games').classList.add('active');
+                document.getElementById('nav-profile').classList.remove('active');
             } else {
-                el.classList.add('opened'); el.innerText='💎'; mCount++; upMinesMult();
-                if(mCount === 21) cashoutMinesGame();
+                document.getElementById('page-games').style.display = 'none';
+                document.getElementById('page-profile').style.display = 'block';
+                document.getElementById('nav-games').classList.remove('active');
+                document.getElementById('nav-profile').classList.add('active');
             }
         }
-        function cashoutMinesGame() {
-            if(!mActive) return; mActive=false;
-            let w = Math.floor(mBet * upMinesMult()); balance+=w;
-            document.getElementById('mine-msg').innerText=`💰 Виграш: ${w} 🪙`; endMinesGameUI(); saveGameResultToDB(true);
-        }
-        function endMinesGameUI() { document.getElementById('mine-start').style.display='inline-block'; document.getElementById('mine-cash').style.display='none'; document.getElementById('mine-input-zone').style.display='flex'; updateBal(); }
 
-        function playTruck(guessFull) {
-            let b = getBet('truck-bet'); if(b > balance || b <= 0) return; balance -= b;
-            let isFull = Math.random() > 0.5;
-            if(guessFull === isFull) { balance += b * 2; document.getElementById('truck-msg').innerText = `🎉 Вгадали! Фура була ${isFull?'завантажена':'порожня'}!`; saveGameResultToDB(true); }
-            else { document.getElementById('truck-msg').innerText = '😢 Не вгадали.'; saveGameResultToDB(false); }
-        }
-
-        function playRPS(pChoice) {
-            let b = getBet('rps-bet'); if(b > balance || b <= 0) return; balance -= b;
-            const options = ['✊', '✌', '✋']; let aiChoice = options[Math.floor(Math.random()*3)];
-            if(pChoice === aiChoice) { balance += b; document.getElementById('rps-msg').innerText = '🤝 Нічия!'; saveGameResultToDB(true); }
-            else if((pChoice==='✊'&&aiChoice==='✌') || (pChoice==='✌'&&aiChoice==='✋') || (pChoice==='✋'&&aiChoice==='✊')) { balance += b*2; document.getElementById('rps-msg').innerText = '🎉 Перемога!'; saveGameResultToDB(true); }
-            else { document.getElementById('rps-msg').innerText = '🤖 ШІ виграв.'; saveGameResultToDB(false); }
-        }
-
-        function playRussianRoulette() {
-            let b = getBet('ru-bet'); if(b > balance || b <= 0) return; balance -= b;
-            if(Math.floor(Math.random()*6) === 0) { document.getElementById('ru-gun').innerText = '💥'; document.getElementById('ru-msg').innerText = '💀 Постріл...'; saveGameResultToDB(false); }
-            else { let w = Math.floor(b * 1.5); balance += w; document.getElementById('ru-gun').innerText = `💨`; document.getElementById('ru-msg').innerText = `Клац! +${w} 🪙`; setTimeout(()=>document.getElementById('ru-gun').innerText = '🔫', 1000); saveGameResultToDB(true); }
-        }
-
-        // ПЕРШИЙ ЗАПУСК: спочатку відкриваємо (одноразову) сесію, потім завантажуємо профіль
-        resetMinesGame();
-        startSession().then(loadProfile);
+        window.onload = loadUserData;
 </script>
-
 </body>
 </html>
