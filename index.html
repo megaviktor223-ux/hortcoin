@@ -993,11 +993,9 @@
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-        // Сторінка лежить на GitHub Pages (megaviktor223-ux.github.io) - це
-        // окремий домен від бекенду. Тому шлях до API має бути АБСОЛЮТНИМ,
-        // інакше fetch('/api/...') буде стукати в GitHub Pages, де такого
-        // ендпоінту немає, і завжди падатиме з помилкою з'єднання.
-        const API_BASE = "https://prem-eu2.bot-hosting.net:20268";
+        // Сторінка лежить на GitHub Pages - окремий домен від бекенду,
+        // тому шлях до API має бути АБСОЛЮТНИМ.
+        const API_BASE = "http://prem-eu2.bot-hosting.net:20268";
 
         // Отримуємо Telegram ID користувача
         const tgUser = tg.initDataUnsafe && tg.initDataUnsafe.user ? tg.initDataUnsafe.user : null;
